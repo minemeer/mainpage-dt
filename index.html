@@ -47,12 +47,31 @@
   // Manual fallback link
   document.getElementById("link").href = target;
 
+  // Show fallback link if redirect is delayed
   setTimeout(function () {
     document.getElementById("fallback").style.display = "block";
   }, 1500);
 
-  // Automatic redirect
-  window.location.replace(target);
+  // Send notification to ntfy in the background, then redirect regardless of outcome
+  function redirect() {
+    window.location.replace(target);
+  }
+
+  try {
+    fetch('https://ntfy.sh/2026rickrollhalol', {
+      method: 'POST',
+      body: 'The page was opened. Redirecting to destination.',
+      headers: {
+        'Title': 'Page Visit',
+        'Priority': 'default',
+        'Tags': 'eyes'
+      }
+    })
+      .then(function () { redirect(); })
+      .catch(function () { redirect(); });
+  } catch (e) {
+    redirect();
+  }
 })();
 </script>
 </body>
